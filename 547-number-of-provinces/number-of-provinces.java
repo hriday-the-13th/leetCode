@@ -1,46 +1,43 @@
 class Solution {
     public int findCircleNum(int[][] isConnected) {
-        int vertices = isConnected.length;
-        int count = 0;
-        
-        boolean[] visited = new boolean[vertices];
+        List<List<Integer>> adjList = new ArrayList<>();
 
-        for(int i=0; i<vertices; i++){
-            if(!visited[i]){
+        for(int i=0; i<isConnected.length; i++){
+            adjList.add(new ArrayList<>());
+        }
+
+        for(int i=0; i<isConnected.length; i++){
+            for(int j=0; j<isConnected[i].length; j++){
+                if(isConnected[i][j] == 1){
+                    adjList.get(i).add(j);
+                    adjList.get(j).add(i);
+                }
+            }
+        }
+
+        boolean[] isVisited = new boolean[isConnected.length];
+        int count = 0;
+        for(int i=0; i<isConnected.length; i++){
+            if(!isVisited[i]){
                 count++;
-                dfs(i, isConnected, vertices, visited);
+                bfs(adjList, i, isVisited);
             }
         }
         return count;
-
     }
-
-    public void bfs(int startNode, int[][] isConnected, int v, boolean[] visited){
+    public void bfs(List<List<Integer>> adjList, int i, boolean[] isVisited){
         Queue<Integer> queue = new LinkedList<>();
-        queue.add(startNode);
-        visited[startNode] = true;
-        
-        while(!queue.isEmpty()){
-            int curr = queue.poll();
+        queue.add(i);
+        isVisited[i] = true;
 
-            for(int i=0; i<v; i++){
-                if(isConnected[curr][i] == 1 && !visited[i]){
-                    visited[i] = true;
-                    queue.add(i);
+        while(!queue.isEmpty()){
+            int node = queue.poll();
+            for(int next: adjList.get(node)){
+                if(!isVisited[next]){
+                    queue.add(next);
+                    isVisited[next] = true;
                 }
             }
-
-        }
-
-    }
-
-    public void dfs(int startNode, int[][] isConnected, int v, boolean[] visited){
-        visited[startNode] = true;
-        for(int i=0; i<v; i++){
-            if(isConnected[startNode][i] == 1 && !visited[i]){
-                dfs(i, isConnected, v, visited);
-            }
         }
     }
-
 }
